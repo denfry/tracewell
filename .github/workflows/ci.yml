@@ -30,13 +30,13 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       - name: Configure
-        run: cmake --preset default
+        run: cmake --preset ci
 
       - name: Build
-        run: cmake --build --preset ${{ matrix.config }}
+        run: cmake --build --preset ci-${{ matrix.config }}
 
       - name: Test
-        run: ctest --preset ${{ matrix.config }}
+        run: ctest --preset ci-${{ matrix.config }}
 
       - name: Upload CLI artifact
         if: matrix.config == 'release'

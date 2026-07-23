@@ -28,13 +28,13 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       - name: Configure
-        run: cmake --preset default
+        run: cmake --preset ci
 
       - name: Build
-        run: cmake --build --preset release
+        run: cmake --build --preset ci-release
 
       - name: Test
-        run: ctest --preset release
+        run: ctest --preset ci-release
 
       - name: Package
         shell: pwsh

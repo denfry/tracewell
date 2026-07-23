@@ -7,11 +7,19 @@
       "architecture": "x64",
       "binaryDir": "${sourceDir}/build",
       "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+    },
+    {
+      "name": "ci",
+      "displayName": "CI (default generator of the runner)",
+      "binaryDir": "${sourceDir}/build",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
     }
   ],
   "buildPresets": [
     { "name": "debug", "configurePreset": "default", "configuration": "Debug" },
-    { "name": "release", "configurePreset": "default", "configuration": "Release" }
+    { "name": "release", "configurePreset": "default", "configuration": "Release" },
+    { "name": "ci-debug", "configurePreset": "ci", "configuration": "Debug" },
+    { "name": "ci-release", "configurePreset": "ci", "configuration": "Release" }
   ],
   "testPresets": [
     {
@@ -23,6 +31,18 @@
     {
       "name": "release",
       "configurePreset": "default",
+      "configuration": "Release",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "ci-debug",
+      "configurePreset": "ci",
+      "configuration": "Debug",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "ci-release",
+      "configurePreset": "ci",
       "configuration": "Release",
       "output": { "outputOnFailure": true }
     }
