@@ -42,10 +42,18 @@ void ListView::SortByColumn(int columnIndex) {
     }
     sortAscending_ = (sortColumn_ == columnIndex) ? !sortAscending_ : true;
     sortColumn_ = columnIndex;
+    const auto column = static_cast<size_t>(sortColumn_);
     std::sort(rows_.begin(), rows_.end(),
-              [this](const std::vector<std::wstring>& a, const std::vector<std::wstring>& b) {
-                  return sortAscending_ ? a[sortColumn_] < b[sortColumn_]
-                                         : a[sortColumn_] > b[sortColumn_];
+              [this, column](const std::vector<std::wstring>& a,
+                              const std::vector<std::wstring>& b) {
+                  const bool aHas = a.size() > column;
+                  const bool bHas = b.size() > column;
+                  if (!aHas || !bHas) {
+                      // Rows too short to have a value at this column always sort
+                      // to the end, regardless of sort direction.
+                      return aHas && !bHas;
+                  }
+                  return sortAscending_ ? a[column] < b[column] : a[column] > b[column];
               });
     Invalidate();
 }
