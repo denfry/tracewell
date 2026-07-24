@@ -2,6 +2,10 @@
 #include "pch.h"
 #include "shell/MainWindow.h"
 
+#include <windowsx.h>
+
+using Microsoft::WRL::ComPtr;
+
 namespace tw::app {
 
 namespace {
@@ -30,6 +34,15 @@ bool MainWindow::Create(HINSTANCE instance, int cmdShow) {
     if (!renderDevice_.Initialize(hwnd_)) {
         return false;
     }
+    themeMode_ = Theme::DetectSystemTheme();
+
+    helloButton_ = std::make_shared<Button>();
+    helloButton_->SetText(L"Hello");
+    helloButton_->SetBounds(D2D1::RectF(24, 24, 144, 64));
+
+    helloText_ = std::make_shared<TextBlock>();
+    helloText_->SetText(L"Tracewell");
+    helloText_->SetBounds(D2D1::RectF(24, 80, 300, 104));
 
     ShowWindow(hwnd_, cmdShow);
     UpdateWindow(hwnd_);
@@ -79,11 +92,35 @@ LRESULT MainWindow::HandleMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
                          SWP_NOZORDER | SWP_NOACTIVATE);
             return 0;
         }
+        case WM_SETTINGCHANGE:
+            themeMode_ = Theme::DetectSystemTheme();
+            InvalidateRect(hwnd, nullptr, FALSE);
+            return 0;
+        case WM_MOUSEMOVE:
+            HandleMouseMove(D2D1::Point2F(static_cast<float>(GET_X_LPARAM(lParam)),
+                                           static_cast<float>(GET_Y_LPARAM(lParam))));
+            return 0;
+        case WM_LBUTTONUP:
+            HandleLeftButtonUp(D2D1::Point2F(static_cast<float>(GET_X_LPARAM(lParam)),
+                                              static_cast<float>(GET_Y_LPARAM(lParam))));
+            return 0;
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
         default:
             return DefWindowProcW(hwnd, msg, wParam, lParam);
+    }
+}
+
+void MainWindow::HandleMouseMove(D2D1_POINT_2F point) {
+    bool hovered = helloButton_->HitTest(point);
+    helloButton_->SetHovered(hovered);
+    InvalidateRect(hwnd_, nullptr, FALSE);
+}
+
+void MainWindow::HandleLeftButtonUp(D2D1_POINT_2F point) {
+    if (helloButton_->HitTest(point)) {
+        helloButton_->Click();
     }
 }
 
@@ -93,7 +130,10 @@ void MainWindow::Paint() {
         ValidateRect(hwnd_, nullptr);
         return;
     }
-    context->Clear(D2D1::ColorF(0.95f, 0.95f, 0.95f));
+    const ThemeColors& theme = Theme::ColorsFor(themeMode_);
+    context->Clear(theme.background);
+    helloButton_->Draw(context, renderDevice_.DWriteFactory(), theme);
+    helloText_->Draw(context, renderDevice_.DWriteFactory(), theme);
     if (!renderDevice_.EndDraw()) {
         InvalidateRect(hwnd_, nullptr, FALSE);
     }

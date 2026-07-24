@@ -40,6 +40,12 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="shell\MainWindow.h" />
     <ClInclude Include="render\RenderDevice.h" />
+    <ClInclude Include="ui\Theme.h" />
+    <ClInclude Include="ui\Widget.h" />
+    <ClInclude Include="ui\Panel.h" />
+    <ClInclude Include="ui\Button.h" />
+    <ClInclude Include="ui\TextBlock.h" />
+    <ClInclude Include="ui\ListView.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -48,6 +54,11 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shell\MainWindow.cpp" />
     <ClCompile Include="render\RenderDevice.cpp" />
+    <ClCompile Include="ui\Theme.cpp" />
+    <ClCompile Include="ui\Panel.cpp" />
+    <ClCompile Include="ui\Button.cpp" />
+    <ClCompile Include="ui\TextBlock.cpp" />
+    <ClCompile Include="ui\ListView.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="App.manifest" />
