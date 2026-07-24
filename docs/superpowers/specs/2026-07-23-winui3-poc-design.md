@@ -70,8 +70,8 @@ Unpackaged, self-contained (Windows App SDK runtime бандлится в вых
 
 ## Definition of Done
 
-- [ ] `src/app/App.vcxproj` собирается в Release, линкуется на `tracewell-core.lib`.
-- [ ] Self-contained unpackaged `App.exe` запускается без установленного WASDK runtime.
-- [ ] Нажатие «Refresh» асинхронно (фон → `DispatcherQueue`) отображает число записей из `StartupRegistryCollector`.
-- [ ] Ни одного WinAPI/collector-вызова в UI-потоке (проверено по коду).
-- [ ] Решение зафиксировано: идём дальше с WinUI 3, либо документирован откат на Win32+D2D (ADR).
+- [ ] `src/app/App.vcxproj` собирается в Release, линкуется на `tracewell-core.lib`. — **Не достигнуто.** Скелет написан по спецификации (Task 1, Steps 1-11), но `msbuild`-сборка блокируется NuGet-restore ошибкой (`Your project does not reference "UAP,Version=v10.0" framework`) — воспроизводимый баг `NuGet.Build.Tasks.GetProjectTargetFrameworksTask` в текущем окружении (см. ADR 0001).
+- [ ] Self-contained unpackaged `App.exe` запускается без установленного WASDK runtime. — Не проверено (сборка не прошла).
+- [ ] Нажатие «Refresh» асинхронно (фон → `DispatcherQueue`) отображает число записей из `StartupRegistryCollector`. — Не проверено (сборка не прошла).
+- [ ] Ни одного WinAPI/collector-вызова в UI-потоке (проверено по коду). — Не проверено динамически; по коду (Task 2 не выполнялся, MainViewModel не создавался) инвариант не применим.
+- [x] Решение зафиксировано: **откат на Win32 + Direct2D**, см. [ADR 0001](../../adr/0001-winui3-poc-fallback-to-win32-d2d.md).

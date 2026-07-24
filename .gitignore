@@ -7,3 +7,5 @@ CMakeUserPresets.json
 vcpkg_installed/
 *.db
 *.log
+src/app/obj/
+src/app/x64/
