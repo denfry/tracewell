@@ -46,6 +46,10 @@
     <ClInclude Include="ui\Button.h" />
     <ClInclude Include="ui\TextBlock.h" />
     <ClInclude Include="ui\ListView.h" />
+    <ClInclude Include="mvvm\ViewModel.h" />
+    <ClInclude Include="mvvm\MainViewModel.h" />
+    <ClInclude Include="mvvm\Property.h" />
+    <ClInclude Include="dispatch\Dispatcher.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -59,6 +63,10 @@
     <ClCompile Include="ui\Button.cpp" />
     <ClCompile Include="ui\TextBlock.cpp" />
     <ClCompile Include="ui\ListView.cpp" />
+    <ClCompile Include="mvvm\MainViewModel.cpp" />
+    <ClCompile Include="dispatch\Dispatcher.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="App.manifest" />
@@ -70,6 +78,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
 
