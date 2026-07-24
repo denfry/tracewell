@@ -9,3 +9,4 @@ vcpkg_installed/
 *.log
 src/app/obj/
 src/app/x64/
+src/app/App/
