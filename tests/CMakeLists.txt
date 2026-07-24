@@ -4,6 +4,8 @@ add_executable(tracewell-tests
     test_diff.cpp
     test_storage.cpp
     test_property.cpp
+    test_dispatcher.cpp
+    ../src/app/dispatch/Dispatcher.cpp
 )
 target_link_libraries(tracewell-tests PRIVATE tracewell-core Catch2::Catch2WithMain)
 
