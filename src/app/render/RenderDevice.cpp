@@ -22,19 +22,23 @@ bool RenderDevice::CreateDeviceResources(HWND hwnd) {
         d3dDevice_.ReleaseAndGetAddressOf(), &featureLevel,
         d3dContext_.ReleaseAndGetAddressOf());
     if (FAILED(hr)) {
+        ReleaseDeviceResources();
         return false;
     }
 
     ComPtr<IDXGIDevice> dxgiDevice;
     if (FAILED(d3dDevice_.As(&dxgiDevice))) {
+        ReleaseDeviceResources();
         return false;
     }
     ComPtr<IDXGIAdapter> adapter;
     if (FAILED(dxgiDevice->GetAdapter(adapter.ReleaseAndGetAddressOf()))) {
+        ReleaseDeviceResources();
         return false;
     }
     ComPtr<IDXGIFactory2> dxgiFactory;
     if (FAILED(adapter->GetParent(IID_PPV_ARGS(dxgiFactory.ReleaseAndGetAddressOf())))) {
+        ReleaseDeviceResources();
         return false;
     }
 
@@ -52,24 +56,29 @@ bool RenderDevice::CreateDeviceResources(HWND hwnd) {
     if (FAILED(dxgiFactory->CreateSwapChainForHwnd(
             d3dDevice_.Get(), hwnd, &swapChainDesc, nullptr, nullptr,
             swapChain_.ReleaseAndGetAddressOf()))) {
+        ReleaseDeviceResources();
         return false;
     }
 
     D2D1_FACTORY_OPTIONS factoryOptions{};
     if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, factoryOptions,
                                   d2dFactory_.ReleaseAndGetAddressOf()))) {
+        ReleaseDeviceResources();
         return false;
     }
     if (FAILED(d2dFactory_->CreateDevice(dxgiDevice.Get(), d2dDevice_.ReleaseAndGetAddressOf()))) {
+        ReleaseDeviceResources();
         return false;
     }
     if (FAILED(d2dDevice_->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE,
                                                 d2dContext_.ReleaseAndGetAddressOf()))) {
+        ReleaseDeviceResources();
         return false;
     }
 
     ComPtr<IDXGISurface> backBuffer;
     if (FAILED(swapChain_->GetBuffer(0, IID_PPV_ARGS(backBuffer.ReleaseAndGetAddressOf())))) {
+        ReleaseDeviceResources();
         return false;
     }
     D2D1_BITMAP_PROPERTIES1 bitmapProperties = D2D1::BitmapProperties1(
@@ -79,6 +88,7 @@ bool RenderDevice::CreateDeviceResources(HWND hwnd) {
     ComPtr<ID2D1Bitmap1> targetBitmap;
     if (FAILED(d2dContext_->CreateBitmapFromDxgiSurface(
             backBuffer.Get(), &bitmapProperties, targetBitmap.ReleaseAndGetAddressOf()))) {
+        ReleaseDeviceResources();
         return false;
     }
     d2dContext_->SetTarget(targetBitmap.Get());
@@ -88,6 +98,7 @@ bool RenderDevice::CreateDeviceResources(HWND hwnd) {
         if (FAILED(DWriteCreateFactory(
                 DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory),
                 reinterpret_cast<IUnknown**>(dwriteFactory_.ReleaseAndGetAddressOf())))) {
+            ReleaseDeviceResources();
             return false;
         }
     }
@@ -119,14 +130,20 @@ void RenderDevice::Resize(UINT width, UINT height) {
     }
 
     ComPtr<IDXGISurface> backBuffer;
-    swapChain_->GetBuffer(0, IID_PPV_ARGS(backBuffer.ReleaseAndGetAddressOf()));
+    if (FAILED(swapChain_->GetBuffer(0, IID_PPV_ARGS(backBuffer.ReleaseAndGetAddressOf())))) {
+        CreateDeviceResources(hwnd_);
+        return;
+    }
     D2D1_BITMAP_PROPERTIES1 bitmapProperties = D2D1::BitmapProperties1(
         D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
         D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE),
         dpiX_, dpiY_);
     ComPtr<ID2D1Bitmap1> targetBitmap;
-    d2dContext_->CreateBitmapFromDxgiSurface(backBuffer.Get(), &bitmapProperties,
-                                              targetBitmap.ReleaseAndGetAddressOf());
+    if (FAILED(d2dContext_->CreateBitmapFromDxgiSurface(backBuffer.Get(), &bitmapProperties,
+                                                          targetBitmap.ReleaseAndGetAddressOf()))) {
+        CreateDeviceResources(hwnd_);
+        return;
+    }
     d2dContext_->SetTarget(targetBitmap.Get());
 }
 
