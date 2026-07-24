@@ -39,6 +39,7 @@
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="shell\MainWindow.h" />
+    <ClInclude Include="render\RenderDevice.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -46,6 +47,7 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shell\MainWindow.cpp" />
+    <ClCompile Include="render\RenderDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="App.manifest" />

@@ -2,6 +2,7 @@
 #pragma once
 
 #include "pch.h"
+#include "render/RenderDevice.h"
 
 namespace tw::app {
 
@@ -13,8 +14,10 @@ public:
 private:
     static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
     LRESULT HandleMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    void Paint();
 
     HWND hwnd_ = nullptr;
+    RenderDevice renderDevice_;
 };
 
 }  // namespace tw::app

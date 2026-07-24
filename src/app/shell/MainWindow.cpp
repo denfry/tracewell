@@ -27,6 +27,10 @@ bool MainWindow::Create(HINSTANCE instance, int cmdShow) {
         return false;
     }
 
+    if (!renderDevice_.Initialize(hwnd_)) {
+        return false;
+    }
+
     ShowWindow(hwnd_, cmdShow);
     UpdateWindow(hwnd_);
     return true;
@@ -58,12 +62,42 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 
 LRESULT MainWindow::HandleMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
+        case WM_PAINT:
+            Paint();
+            return 0;
+        case WM_SIZE:
+            renderDevice_.Resize(LOWORD(lParam), HIWORD(lParam));
+            InvalidateRect(hwnd, nullptr, FALSE);
+            return 0;
+        case WM_DPICHANGED: {
+            renderDevice_.SetDpi(static_cast<float>(LOWORD(wParam)),
+                                  static_cast<float>(HIWORD(wParam)));
+            auto* suggested = reinterpret_cast<RECT*>(lParam);
+            SetWindowPos(hwnd, nullptr, suggested->left, suggested->top,
+                         suggested->right - suggested->left,
+                         suggested->bottom - suggested->top,
+                         SWP_NOZORDER | SWP_NOACTIVATE);
+            return 0;
+        }
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
         default:
             return DefWindowProcW(hwnd, msg, wParam, lParam);
     }
+}
+
+void MainWindow::Paint() {
+    ID2D1DeviceContext* context = renderDevice_.BeginDraw();
+    if (!context) {
+        ValidateRect(hwnd_, nullptr);
+        return;
+    }
+    context->Clear(D2D1::ColorF(0.95f, 0.95f, 0.95f));
+    if (!renderDevice_.EndDraw()) {
+        InvalidateRect(hwnd_, nullptr, FALSE);
+    }
+    ValidateRect(hwnd_, nullptr);
 }
 
 }  // namespace tw::app
