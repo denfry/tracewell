@@ -15,7 +15,10 @@ public:
 
     explicit Property(T initial = T{}) : value_(std::move(initial)) {}
 
-    const T& Get() const { return value_; }
+    T Get() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return value_;
+    }
 
     void Set(T value) {
         {
